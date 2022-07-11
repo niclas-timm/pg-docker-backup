@@ -28,4 +28,5 @@ func main(){
 	db.Dump(containerName, username, dbName)
 	client := awsManager.ConnectToS3()
 	awsManager.UploadToS3(client, "tmp/temporary_dump.sql.gz")
+	awsManager.GetAllBackupsFromS3(client)
 }

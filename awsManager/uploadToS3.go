@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"strconv"
+	"time"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
@@ -19,9 +21,10 @@ func UploadToS3(c *s3.Client, filepath string){
 		panic("Errow while opening file")
 	}
 	defer file.Close()
+	filename := createBackupFileName()
 	result, err := uploader.Upload(context.TODO(), &s3.PutObjectInput{
 		Bucket: aws.String("immoreport-test"),
-		Key:    aws.String("backups/backup-test.sql.gz"),
+		Key:    aws.String(filename),
 		Body:   file,
 	})
 
@@ -30,7 +33,11 @@ func UploadToS3(c *s3.Client, filepath string){
 		panic("Could not upload to S3.")
 	}
 
-
 	fmt.Println(result.Location)
 
+}
+
+func createBackupFileName() string{
+	timestamp := time.Now().Unix()
+	return fmt.Sprintf("%s/backup-%s.sql.gz", backupDirectory, strconv.FormatInt(timestamp, 16))
 }
