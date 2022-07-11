@@ -6,14 +6,16 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"pg-docker-backup/notifications"
+	"strconv"
+	"time"
 )
 
 var TmpDirName = "tmp"
 
-
 // CreateTmpDumpFile creates a gzipped file in the tmp directory
 // from a slice of bytes.
-func CreateTmpDumpFile(content []byte) error {
+func CreateTmpDumpFile(content []byte) (string, error) {
 	var b bytes.Buffer
 	w := gzip.NewWriter(&b)
 	w.Write(content)
@@ -24,8 +26,27 @@ func CreateTmpDumpFile(content []byte) error {
 		os.Mkdir(TmpDirName, os.ModePerm)
 	}
 
-	dumpFileName := fmt.Sprintf("%s/%s", TmpDirName, "temporary_dump.sql.gz")
+	filename := createTmpBackupFileName()
 
-	return ioutil.WriteFile(dumpFileName, b.Bytes(), 0666)
+	return filename, ioutil.WriteFile(filename, b.Bytes(), 0666)
 	
+}
+
+// RemoveTmpDumpFile removes the temporary dump file.
+// 
+// The dump file is created so that it can be uploaded to 
+// S3. Afterwards, we don't need it anymore so we can delete it.
+func RemoveTmpDumpFile(filename string){
+	err := os.Remove(filename)
+	if err != nil {
+		errMsg := fmt.Sprintf("Could not remove temporary dump file: %s", filename)
+		notifications.NotifyViaAllChannels(errMsg)
+		panic(errMsg)
+	}
+}
+
+// createTmpBackupFileName creates the name for the temporary backup file.
+func createTmpBackupFileName() string{
+	timestamp := time.Now().Unix()
+	return fmt.Sprintf("%s/backup-%s.sql.gz", TmpDirName, strconv.FormatInt(timestamp, 16))
 }

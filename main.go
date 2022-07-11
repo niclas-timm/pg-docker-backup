@@ -4,10 +4,12 @@ import (
 	"flag"
 	"pg-docker-backup/awsManager"
 	"pg-docker-backup/db"
+	"pg-docker-backup/fileManager"
 
 	"github.com/joho/godotenv"
 )
 
+// main is the entry method of the program.
 func main(){
 
 	godotenv.Load()
@@ -25,13 +27,18 @@ func main(){
 		panic("Please provide containerName (--c), username (--u) and database name (--d)")
 	}
 
-	db.Dump(containerName, username, dbName)
+	// Create the database dump from the docker container based on the
+	// inputs the user gave when executing the script.
+	tmpFilename := db.Dump(containerName, username, dbName)
+
+	// Connect to S3 and store the dump file there.
+	// Plus, delete excess backup files from S3 in order to save storage space.
 	client := awsManager.ConnectToS3()
 	existingBucketItems := awsManager.GetAllBackupsFromS3(client)
 	awsManager.DeleteExcessBackupsFromS3(client, existingBucketItems)
-	// TODO: Check if length of items greater that 6
-	// If so, delete all items but the first 6 in the slice
-	// This will delete only the oldest items, since 
-	// exisiingBucketItems is already sorted.
-	awsManager.UploadToS3(client, "tmp/temporary_dump.sql.gz")
+	awsManager.UploadToS3(client, tmpFilename)
+
+	// Delet the temporary dump file since we don't need it anymore
+	// after uploading it to S3.
+	fileManager.RemoveTmpDumpFile(tmpFilename)
 }

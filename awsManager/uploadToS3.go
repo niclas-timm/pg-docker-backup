@@ -37,6 +37,7 @@ func UploadToS3(c *s3.Client, filepath string){
 
 }
 
+// createBackupFileName creates the of the backup file.
 func createBackupFileName() string{
 	timestamp := time.Now().Unix()
 	return fmt.Sprintf("%s/backup-%s.sql.gz", backupDirectory, strconv.FormatInt(timestamp, 16))
