@@ -1,0 +1,30 @@
+version: "3"
+
+services:
+  # DB
+  db:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+      PGDATA: /var/lib/postgresql/data
+    volumes:
+      - pg-docker-backup:/var/lib/postgresql/data
+      - ./tmp:/home
+    ports:
+      - "5432:5432"
+
+  # Mail
+  mail:
+    image: mailhog/mailhog
+    logging:
+      driver: "none"
+    ports:
+      - 1025:1025
+      - 8025:8025
+
+volumes:
+  pg-docker-backup:
+    driver: local
