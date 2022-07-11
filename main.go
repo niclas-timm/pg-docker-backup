@@ -27,6 +27,11 @@ func main(){
 
 	db.Dump(containerName, username, dbName)
 	client := awsManager.ConnectToS3()
+	existingBucketItems := awsManager.GetAllBackupsFromS3(client)
+	awsManager.DeleteExcessBackupsFromS3(client, existingBucketItems)
+	// TODO: Check if length of items greater that 6
+	// If so, delete all items but the first 6 in the slice
+	// This will delete only the oldest items, since 
+	// exisiingBucketItems is already sorted.
 	awsManager.UploadToS3(client, "tmp/temporary_dump.sql.gz")
-	awsManager.GetAllBackupsFromS3(client)
 }

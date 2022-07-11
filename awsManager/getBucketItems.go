@@ -10,10 +10,8 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
 )
 
-const backupDirectory = "backups"
-
 // GetAllBackupsFromS3 returns all backup files from an the S3 bucket.
-// 
+//
 // The items will be returned in descending order by modification date.
 // This means, "newer" items will come first in the slice.
 func GetAllBackupsFromS3(c *s3.Client) []types.Object{
