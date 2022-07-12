@@ -29,3 +29,5 @@ go.work
 /.vscode
 
 todo.md
+
+db-backup

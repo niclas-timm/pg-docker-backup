@@ -5,6 +5,7 @@ import (
 	"pg-docker-backup/awsManager"
 	"pg-docker-backup/db"
 	"pg-docker-backup/fileManager"
+	"pg-docker-backup/notifications"
 
 	"github.com/joho/godotenv"
 )
@@ -12,7 +13,12 @@ import (
 // main is the entry method of the program.
 func main(){
 
-	godotenv.Load()
+	// Load environment variables from .env file.
+	err := godotenv.Load()
+	if err != nil {
+		notifications.NotifyViaAllChannels("Unable to load environment variables. Aborting backup.")
+		panic("Could not load environment variables")
+	}
 
 	// Capture relevant data from command line arguments
 	var containerName string
