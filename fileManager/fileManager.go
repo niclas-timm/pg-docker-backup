@@ -11,7 +11,12 @@ import (
 	"time"
 )
 
-var TmpDirName = "tmp"
+const(
+	TmpDirName = "tmp"
+	TmpImpDirName = "tmp/imp"
+	TmpImpFileName = "tmp_import_file_sql.gz"
+)
+
 
 // CreateTmpDumpFile creates a gzipped file in the tmp directory
 // from a slice of bytes.
@@ -45,8 +50,11 @@ func RemoveTmpDumpFile(filename string){
 	}
 }
 
+func CreateLocalTmpImportDump(){}
+
 // createTmpBackupFileName creates the name for the temporary backup file.
 func createTmpBackupFileName() string{
 	timestamp := time.Now().Unix()
 	return fmt.Sprintf("%s/backup-%s.sql.gz", TmpDirName, strconv.FormatInt(timestamp, 16))
 }
+

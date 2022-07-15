@@ -17,7 +17,7 @@ import (
 func GetAllBackupsFromS3(c *s3.Client) []types.Object{
 	output, err := c.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: aws.String(os.Getenv("AWS_S3_BUCKET")),
-		Prefix: aws.String(backupDirectory),
+		Prefix: aws.String(BackupDirectory),
 	})
 
 	if err != nil {
