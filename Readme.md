@@ -38,7 +38,7 @@ Compile the code
 Run the program
 
 ```
-db-backup --c="<POSTGRES_CONTAINER_NAME>"  --u="<POSTGRES_USERNAME>" --d="<DATABASE_NAME>"
+db-backup backup --container="<POSTGRES_CONTAINER_NAME>"  --username="<POSTGRES_USERNAME>" --database="<DATABASE_NAME>"
 ```
 
 # Environment variables
