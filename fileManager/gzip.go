@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-
+// UnzipFile unzips a gzipped file and returns its content as an array of bytes.
 func UnzipFile(file *os.File) ([]byte, error){
 	defer file.Close()
 

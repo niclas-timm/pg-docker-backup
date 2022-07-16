@@ -2,7 +2,8 @@ package db
 
 import "os/exec"
 
-
+// ImportDbDump runs a shell command that imports a database dump into a postgres
+// database that lives inside a docker container.
 func ImportDbDump(containerName string, username string, dbName string) ([]byte, error) {
 	shellCommand := exec.Command(
 		"docker",

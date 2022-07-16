@@ -6,6 +6,7 @@ import (
 
 var rootCmd = &cobra.Command{}
 
+// init method. Used for adding commands to the root command.
 func init(){
 	rootCmd.AddCommand(backup)
 	rootCmd.AddCommand(imp)

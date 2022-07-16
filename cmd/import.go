@@ -21,12 +21,14 @@ var imp = &cobra.Command{
 	},
 }
 
+// init method. Used for specifying the flags form the imp command.
 func init(){
 	imp.PersistentFlags().String("container", "c", "The name of the container the postgres database lives in.")
 	imp.PersistentFlags().String("username", "u", "The name of the container the postgres database lives in.")
 	imp.PersistentFlags().String("database", "d", "The name of the container the postgres database lives in.")
 }
 
+// runImport donwloads the latest dump file from S3 and dumps it intp the local database container.
 func runImport(cmd *cobra.Command){
 	client := awsManager.ConnectToS3()
 	files := awsManager.GetAllBackupsFromS3(client)

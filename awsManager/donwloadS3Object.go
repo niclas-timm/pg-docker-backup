@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 )
 
+// DownloadS3Object downloads an object from S3 and stores the content in a local file.
 func DownloadS3Object(client *s3.Client, s3FileName string, localStorageObject *os.File){
 
 	downloader := manager.NewDownloader(client)
