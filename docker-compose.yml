@@ -6,10 +6,10 @@ services:
     image: postgres
     restart: unless-stopped
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_USER: niclas
+      POSTGRES_PASSWORD: 123456
       POSTGRES_DB: ${DB_NAME}
-      PGDATA: /var/lib/postgresql/data
+      PGDATA: pgdockerbackup
     volumes:
       - pg-docker-backup:/var/lib/postgresql/data
       - ./tmp:/home

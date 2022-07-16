@@ -1,7 +1,6 @@
 package cmd
 
 import (
-	"fmt"
 	"pg-docker-backup/awsManager"
 	"pg-docker-backup/db"
 	"pg-docker-backup/fileManager"
@@ -30,7 +29,6 @@ func run(cmd *cobra.Command){
 	containerName,_ := cmd.Flags().GetString("container")
 	username,_ := cmd.Flags().GetString("username")
 	dbName,_ := cmd.Flags().GetString("database")
-	fmt.Print(containerName)
 
 	if containerName == "" || username == "" || dbName == "" {
 		panic("Please provide containerName (--c), username (--u) and database name (--d)")

@@ -1,15 +1,12 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"os"
 	"pg-docker-backup/awsManager"
+	"pg-docker-backup/db"
 	"pg-docker-backup/fileManager"
 
-	"github.com/aws/aws-sdk-go-v2/feature/s3/manager"
-	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/spf13/cobra"
 )
 
@@ -25,7 +22,9 @@ var imp = &cobra.Command{
 }
 
 func init(){
-	// TODO: Set flags.
+	imp.PersistentFlags().String("container", "c", "The name of the container the postgres database lives in.")
+	imp.PersistentFlags().String("username", "u", "The name of the container the postgres database lives in.")
+	imp.PersistentFlags().String("database", "d", "The name of the container the postgres database lives in.")
 }
 
 func runImport(cmd *cobra.Command){
@@ -36,40 +35,52 @@ func runImport(cmd *cobra.Command){
 		panic("No backups stored in S3. Aborting.")
 	}
 
-	
 	// Create tmp directory if it not already exists.
 	if _, err := os.Stat(fileManager.TmpImpDirName); os.IsNotExist(err) {
 		os.Mkdir(fileManager.TmpImpDirName, os.ModePerm)
 	}
 	
-	latestBackup := files[0]
-
-	localFileName := *latestBackup.Key
+	s3latestBackup := files[0]
+	s3LatestBackupFilename := *s3latestBackup.Key
 
 	// Create tmp directory if it not already exists.
 	if _, err := os.Stat(fileManager.TmpImpDirName); os.IsNotExist(err) {
 		os.Mkdir(fileManager.TmpImpDirName, os.ModePerm)
 	}
 
-	localFile, err := os.Create(fmt.Sprintf("%s/%s", fileManager.TmpImpDirName, fileManager.TmpImpFileName))
+	localTmpTargetFile, err := os.Create(fmt.Sprintf("%s/%s", fileManager.TmpImpDirName, fileManager.TmpImpFileName))
 
-	defer localFile.Close()
+	defer localTmpTargetFile.Close()
 
 	if err != nil {
 		panic("Could not create temporary download file. Aborting.")
 	}
 
-	downloader := manager.NewDownloader(client)
-
-    _, err = downloader.Download(context.TODO(), localFile, &s3.GetObjectInput{
-		Bucket: aws.String(os.Getenv("AWS_S3_BUCKET")),
-		Key: aws.String(localFileName),
-	})
-
+	awsManager.DownloadS3Object(client, s3LatestBackupFilename, localTmpTargetFile)
+	fileBytes, err := fileManager.UnzipFile(localTmpTargetFile)
 	if err != nil {
 		panic(err.Error())
 	}
 
-	fmt.Print("Successfully downloaded backup from S3.")
+	os.WriteFile("tmp/import_file.sql", fileBytes, 0644)
 
+	// Copy file into container with docker cp command
+	containerName,_ := cmd.Flags().GetString("container")
+	username,_ := cmd.Flags().GetString("username")
+	dbName,_ := cmd.Flags().GetString("database")
+	if containerName == "" || username == "" || dbName == "" {
+		panic("Please provide containerName (--c), username (--u) and database name (--d)")
+	}
+
+	// Copy the import file into the container.
+	copyImportFileOutput, err := fileManager.CopyFileToDockerContainer(containerName, "tmp/import_file.sql", "/home")
+	if err != nil {
+		fmt.Println(string(copyImportFileOutput))
+		panic("Error while importing the database: Unable to copy the dump file into the target container.")
+	}
+
+	// Import the DB.
+	importDumpOutput,_ := db.ImportDbDump(containerName, username, dbName)
+	fmt.Println(string(importDumpOutput))
+	
 }
