@@ -3,9 +3,11 @@ package db
 import (
 	"fmt"
 	"os/exec"
-	"pg-docker-backup/fileManager"
-	"pg-docker-backup/notifications"
+
+	"github.com/NiclasTimmeDev/pg-docker-backup/fileManager"
+	"github.com/NiclasTimmeDev/pg-docker-backup/notifications"
 )
+
 
 var tmpDirName = "tmp"
 

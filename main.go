@@ -1,10 +1,10 @@
 package main
 
 import (
-	"pg-docker-backup/cmd"
-	"pg-docker-backup/notifications"
-
 	"github.com/joho/godotenv"
+
+	"github.com/NiclasTimmeDev/pg-docker-backup/cmd"
+	"github.com/NiclasTimmeDev/pg-docker-backup/notifications"
 )
 
 // main is the entry method of the program.

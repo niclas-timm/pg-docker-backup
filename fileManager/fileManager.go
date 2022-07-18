@@ -6,9 +6,10 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
-	"pg-docker-backup/notifications"
 	"strconv"
 	"time"
+
+	"github.com/NiclasTimmeDev/pg-docker-backup/notifications"
 )
 
 const(

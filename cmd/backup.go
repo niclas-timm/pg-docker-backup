@@ -1,10 +1,9 @@
 package cmd
 
 import (
-	"pg-docker-backup/awsManager"
-	"pg-docker-backup/db"
-	"pg-docker-backup/fileManager"
-
+	"github.com/NiclasTimmeDev/pg-docker-backup/awsManager"
+	"github.com/NiclasTimmeDev/pg-docker-backup/db"
+	"github.com/NiclasTimmeDev/pg-docker-backup/fileManager"
 	"github.com/spf13/cobra"
 )
 

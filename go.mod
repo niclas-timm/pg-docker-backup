@@ -1,4 +1,4 @@
-module pg-docker-backup
+module github.com/NiclasTimmeDev/pg-docker-backup
 
 go 1.18
 
