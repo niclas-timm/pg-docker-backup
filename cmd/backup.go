@@ -19,9 +19,9 @@ var backup = &cobra.Command{
 }
 
 func init(){
-	backup.PersistentFlags().String("container", "c", "The name of the container the postgres database lives in.")
-	backup.PersistentFlags().String("username", "u", "The Postgres database username.")
-	backup.PersistentFlags().String("database", "d", "The Postgres database name.")
+	backup.PersistentFlags().String("container", "", "The name of the container the postgres database lives in.")
+	backup.PersistentFlags().String("username", "", "The Postgres database username.")
+	backup.PersistentFlags().String("database", "", "The Postgres database name.")
 }
 
 func run(cmd *cobra.Command){
