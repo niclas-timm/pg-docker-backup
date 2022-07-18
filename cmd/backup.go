@@ -9,10 +9,10 @@ import (
 
 var backup = &cobra.Command{
 	Use:   "backup",
-	Short: "Hugo is a very fast static site generator",
-	Long: `A Fast and Flexible Static Site Generator built with
-				  love by spf13 and friends in Go.
-				  Complete documentation is available at https://gohugo.io/documentation/`,
+	Short: "Create a backup.",
+	Long: `Create a backup of your Postgres database that
+		   lives in a Docker container and store it in S3.
+		  `,
 	Run: func(cmd *cobra.Command, args []string) {
 		run(cmd)
 	},
@@ -20,8 +20,8 @@ var backup = &cobra.Command{
 
 func init(){
 	backup.PersistentFlags().String("container", "c", "The name of the container the postgres database lives in.")
-	backup.PersistentFlags().String("username", "u", "The name of the container the postgres database lives in.")
-	backup.PersistentFlags().String("database", "d", "The name of the container the postgres database lives in.")
+	backup.PersistentFlags().String("username", "u", "The Postgres database username.")
+	backup.PersistentFlags().String("database", "d", "The Postgres database name.")
 }
 
 func run(cmd *cobra.Command){

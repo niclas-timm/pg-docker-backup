@@ -13,10 +13,8 @@ import (
 
 var imp = &cobra.Command{
 	Use:   "import",
-	Short: "Hugo is a very fast static site generator",
-	Long: `A Fast and Flexible Static Site Generator built with
-				  love by spf13 and friends in Go.
-				  Complete documentation is available at https://gohugo.io/documentation/`,
+	Short: "Import a dump from S3",
+	Long: `Import the latest database dump from S3 into your local Postgres database (inside Docker)`,
 	Run: func(cmd *cobra.Command, args []string) {
 		runImport(cmd)
 	},
@@ -25,8 +23,8 @@ var imp = &cobra.Command{
 // init method. Used for specifying the flags form the imp command.
 func init(){
 	imp.PersistentFlags().String("container", "c", "The name of the container the postgres database lives in.")
-	imp.PersistentFlags().String("username", "u", "The name of the container the postgres database lives in.")
-	imp.PersistentFlags().String("database", "d", "The name of the container the postgres database lives in.")
+	imp.PersistentFlags().String("username", "u", "The Postgres database username..")
+	imp.PersistentFlags().String("database", "d", "TThe Postgres database name.")
 }
 
 // runImport donwloads the latest dump file from S3 and dumps it intp the local database container.
