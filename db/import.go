@@ -18,7 +18,7 @@ func ImportDbDump(containerName string, username string, dbName string) ([]byte,
 		username,
 		"-d",
 		dbName,
-		"/home/import_file.dump",
+		"/home/import_file.sql",
 	)
 
 	return shellCommand.CombinedOutput()

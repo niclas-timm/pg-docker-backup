@@ -22,12 +22,14 @@ func init(){
 	backup.PersistentFlags().String("container", "", "The name of the container the postgres database lives in.")
 	backup.PersistentFlags().String("username", "", "The Postgres database username.")
 	backup.PersistentFlags().String("database", "", "The Postgres database name.")
+	backup.PersistentFlags().String("table", "", "Can be used to create a backup for a single table only. If left empty, all tables will be backed up. If a table name is provided, only this table will be backed up.")
 }
 
 func run(cmd *cobra.Command){
 	containerName,_ := cmd.Flags().GetString("container")
 	username,_ := cmd.Flags().GetString("username")
 	dbName,_ := cmd.Flags().GetString("database")
+	table,_ := cmd.Flags().GetString("table")
 
 	if containerName == "" || username == "" || dbName == "" {
 		panic("Please provide containerName (--c), username (--u) and database name (--d)")
@@ -35,7 +37,7 @@ func run(cmd *cobra.Command){
 
 	// Create the database dump from the docker container based on the
 	// inputs the user gave when executing the script.
-	tmpFilename := db.Dump(containerName, username, dbName)
+	tmpFilename := db.Dump(containerName, username, dbName, table)
 
 	// Connect to S3 and store the dump file there.
 	// Plus, delete excess backup files from S3 in order to save storage space.
