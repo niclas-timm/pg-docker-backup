@@ -25,25 +25,38 @@ var imp = &cobra.Command{
 func init(){
 	imp.PersistentFlags().String("container", "", "The name of the container the postgres database lives in.")
 	imp.PersistentFlags().String("username", "", "The Postgres database username..")
-	imp.PersistentFlags().String("database", "", "TThe Postgres database name.")
+	imp.PersistentFlags().String("database", "", "The Postgres database name.")
+	imp.PersistentFlags().String("filename", "", "Name of the file that should be imported. Default to the latest backup.")
 }
 
 // runImport donwloads the latest dump file from S3 and dumps it intp the local database container.
 func runImport(cmd *cobra.Command){
 	client := awsManager.ConnectToS3()
-	files := awsManager.GetAllBackupsFromS3(client)
 
+	containerName,_ := cmd.Flags().GetString("container")
+	username,_ := cmd.Flags().GetString("username")
+	dbName,_ := cmd.Flags().GetString("database")
+	predefinedFileName,_ := cmd.Flags().GetString("filename")
+
+
+	files := awsManager.GetAllBackupsFromS3(client)
 	if len(files) == 0 {
 		panic("No backups stored in S3. Aborting.")
 	}
 
+	s3latestBackup := files[0]
+	s3LatestBackupFilename := *s3latestBackup.Key
+
 	// Create tmp directory if it not already exists.
 	if _, err := os.Stat(config.TmpImpDirName); os.IsNotExist(err) {
 		os.Mkdir(config.TmpImpDirName, os.ModePerm)
+	}	
+
+	filenameToImport := s3LatestBackupFilename
+
+	if predefinedFileName != "" {
+		filenameToImport = fmt.Sprintf("%s/%s", config.Conf.S3.DirectoryPrefix, predefinedFileName)
 	}
-	
-	s3latestBackup := files[0]
-	s3LatestBackupFilename := *s3latestBackup.Key
 
 	// Create tmp directory if it not already exists.
 	if _, err := os.Stat(config.TmpImpDirName); os.IsNotExist(err) {
@@ -51,14 +64,13 @@ func runImport(cmd *cobra.Command){
 	}
 
 	localTmpTargetFile, err := os.Create(fmt.Sprintf("%s/%s", config.TmpImpDirName, config.TmpImpFileName))
-
 	defer localTmpTargetFile.Close()
 
 	if err != nil {
 		panic("Could not create temporary download file. Aborting.")
 	}
 
-	awsManager.DownloadS3Object(client, s3LatestBackupFilename, localTmpTargetFile)
+	awsManager.DownloadS3Object(client, filenameToImport, localTmpTargetFile)
 	fileBytes, err := fileManager.UnzipFile(localTmpTargetFile)
 	if err != nil {
 		panic(err.Error())
@@ -66,10 +78,8 @@ func runImport(cmd *cobra.Command){
 
 	os.WriteFile("tmp/import_file.sql", fileBytes, 0644)
 
-	// Copy file into container with docker cp command
-	containerName,_ := cmd.Flags().GetString("container")
-	username,_ := cmd.Flags().GetString("username")
-	dbName,_ := cmd.Flags().GetString("database")
+	
+	 
 	if containerName == "" || username == "" || dbName == "" {
 		panic("Please provide containerName (--c), username (--u) and database name (--d)")
 	}
@@ -83,6 +93,7 @@ func runImport(cmd *cobra.Command){
 
 	// Import the DB.
 	importDumpOutput,_ := db.ImportDbDump(containerName, username, dbName)
+
 	fmt.Println(string(importDumpOutput))
 	
 }

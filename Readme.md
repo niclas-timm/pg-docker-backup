@@ -75,7 +75,7 @@ If you don't have `config.yml` just duplicate `config.defautl.yml` and name it `
 
 `config.default.yml` contains some default configurations that you don't need to worry about. But please also don't delete it ;).
 
-You can use `config.yml` to override the default config. For example, you can define the maximum number of backups will be stored in S3 and what the subdirectory these backups will be stored in. You can also define if you want to be notified about errors via slack and/or email (see below for details).
+You can use `config.yml` to override the default config. For example, you can define the maximum number of backups will be stored in S3 and what the subdirectory these backups will be stored in (e.g., `backups/`). You can also define if you want to be notified about errors via slack and/or email (see below for details).
 
 # Notifications
 
@@ -97,6 +97,22 @@ db-backup backup --container="<POSTGRES_CONTAINER_NAME>"  --username="<POSTGRES_
 will create a backup of the `users` table only.
 
 **Attention:** Notice the "public" keyword before the acutal name of the table. This is required.
+
+# Import a database
+
+Creating backups in useless if you can' import these backups. But don't worry, we've got you covered. All you have to do is execute the following command:
+
+```
+db-backup import --container="<POSTGRES_CONTAINER_NAME>"  --username="<POSTGRES_USERNAME>" --database="<DATABASE_NAME>"
+```
+
+This will by default donwload and import the latest dump into your database. If you want to import another database (not the latest one), you can do the following
+
+```
+db-backup import --container="<POSTGRES_CONTAINER_NAME>"  --username="<POSTGRES_USERNAME>" --database="<DATABASE_NAME>" --filename="<NAME_OF_THE_BACKUP_FILE>"
+```
+
+Notice the `--filename` flag in the end. It must match the name of a backup file in your S§ without the subdirectory name that you configured in `config.yml`. So for example if the backup lives under `backups/my_backup.sql.gz`, only do `--filename="my_backup.sql.gz"`.
 
 # Under the hood
 
