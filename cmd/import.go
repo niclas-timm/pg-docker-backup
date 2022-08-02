@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/NiclasTimmeDev/pg-docker-backup/awsManager"
+	"github.com/NiclasTimmeDev/pg-docker-backup/config"
 	"github.com/NiclasTimmeDev/pg-docker-backup/db"
 	"github.com/NiclasTimmeDev/pg-docker-backup/fileManager"
 
@@ -37,19 +38,19 @@ func runImport(cmd *cobra.Command){
 	}
 
 	// Create tmp directory if it not already exists.
-	if _, err := os.Stat(fileManager.TmpImpDirName); os.IsNotExist(err) {
-		os.Mkdir(fileManager.TmpImpDirName, os.ModePerm)
+	if _, err := os.Stat(config.TmpImpDirName); os.IsNotExist(err) {
+		os.Mkdir(config.TmpImpDirName, os.ModePerm)
 	}
 	
 	s3latestBackup := files[0]
 	s3LatestBackupFilename := *s3latestBackup.Key
 
 	// Create tmp directory if it not already exists.
-	if _, err := os.Stat(fileManager.TmpImpDirName); os.IsNotExist(err) {
-		os.Mkdir(fileManager.TmpImpDirName, os.ModePerm)
+	if _, err := os.Stat(config.TmpImpDirName); os.IsNotExist(err) {
+		os.Mkdir(config.TmpImpDirName, os.ModePerm)
 	}
 
-	localTmpTargetFile, err := os.Create(fmt.Sprintf("%s/%s", fileManager.TmpImpDirName, fileManager.TmpImpFileName))
+	localTmpTargetFile, err := os.Create(fmt.Sprintf("%s/%s", config.TmpImpDirName, config.TmpImpFileName))
 
 	defer localTmpTargetFile.Close()
 

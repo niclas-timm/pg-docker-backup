@@ -8,9 +8,6 @@ import (
 	"github.com/NiclasTimmeDev/pg-docker-backup/notifications"
 )
 
-
-var tmpDirName = "tmp"
-
 // Dump creates a dump file from a docker container and stores it
 // in the tmp directory.
 func Dump(containerName string, username string, dbName string, table string) string {

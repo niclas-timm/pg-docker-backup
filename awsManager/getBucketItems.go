@@ -5,6 +5,7 @@ import (
 	"os"
 	"sort"
 
+	"github.com/NiclasTimmeDev/pg-docker-backup/config"
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
 	"github.com/aws/aws-sdk-go-v2/service/s3/types"
@@ -17,7 +18,7 @@ import (
 func GetAllBackupsFromS3(c *s3.Client) []types.Object{
 	output, err := c.ListObjectsV2(context.TODO(), &s3.ListObjectsV2Input{
 		Bucket: aws.String(os.Getenv("AWS_S3_BUCKET")),
-		Prefix: aws.String(BackupDirectory),
+		Prefix: aws.String(config.Conf.S3.DirectoryPrefix),
 	})
 
 	if err != nil {

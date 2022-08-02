@@ -1,0 +1,13 @@
+# AWS S3.
+s3:
+  number_of_stored_backups: 7
+  directory_prefix: backups
+
+# Notifications.
+notifications:
+  slack:
+    enabled: false
+    send_on_success: false
+  email:
+    enabled: false
+    send_on_success: false

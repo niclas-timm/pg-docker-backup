@@ -9,15 +9,9 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/NiclasTimmeDev/pg-docker-backup/config"
 	"github.com/NiclasTimmeDev/pg-docker-backup/notifications"
 )
-
-const(
-	TmpDirName = "tmp"
-	TmpImpDirName = "tmp/imp"
-	TmpImpFileName = "tmp_import_file_sql.gz"
-)
-
 
 // CreateTmpDumpFile creates a gzipped file in the tmp directory
 // from a slice of bytes.
@@ -28,8 +22,8 @@ func CreateTmpDumpFile(content []byte) (string, error) {
 	w.Close()
 
 	// Create tmp directory if it not already exists.
-	if _, err := os.Stat(TmpDirName); os.IsNotExist(err) {
-		os.Mkdir(TmpDirName, os.ModePerm)
+	if _, err := os.Stat(config.TmpDirName); os.IsNotExist(err) {
+		os.Mkdir(config.TmpDirName, os.ModePerm)
 	}
 
 	filename := createTmpBackupFileName()
@@ -56,6 +50,6 @@ func CreateLocalTmpImportDump(){}
 // createTmpBackupFileName creates the name for the temporary backup file.
 func createTmpBackupFileName() string{
 	timestamp := time.Now().Unix()
-	return fmt.Sprintf("%s/backup-%s.sql.gz", TmpDirName, strconv.FormatInt(timestamp, 16))
+	return fmt.Sprintf("%s/backup-%s.sql.gz", config.TmpDirName, strconv.FormatInt(timestamp, 16))
 }
 

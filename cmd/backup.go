@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/NiclasTimmeDev/pg-docker-backup/awsManager"
+	"github.com/NiclasTimmeDev/pg-docker-backup/config"
 	"github.com/NiclasTimmeDev/pg-docker-backup/db"
 	"github.com/NiclasTimmeDev/pg-docker-backup/fileManager"
 	"github.com/spf13/cobra"
@@ -26,6 +27,7 @@ func init(){
 }
 
 func run(cmd *cobra.Command){
+	
 	containerName,_ := cmd.Flags().GetString("container")
 	username,_ := cmd.Flags().GetString("username")
 	dbName,_ := cmd.Flags().GetString("database")
@@ -43,8 +45,8 @@ func run(cmd *cobra.Command){
 	// Plus, delete excess backup files from S3 in order to save storage space.
 	client := awsManager.ConnectToS3()
 	existingBucketItems := awsManager.GetAllBackupsFromS3(client)
-	awsManager.DeleteExcessBackupsFromS3(client, existingBucketItems)
-	awsManager.UploadToS3(client, tmpFilename)
+	awsManager.DeleteExcessBackupsFromS3(client, existingBucketItems, config.Conf)
+	awsManager.UploadToS3(client, tmpFilename, config.Conf)
 
 	// Delet the temporary dump file since we don't need it anymore
 	// after uploading it to S3.

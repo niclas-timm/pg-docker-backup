@@ -7,19 +7,21 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/NiclasTimmeDev/pg-docker-backup/config"
 )
 
 type SlackRequestBody struct {
     Text string `json:"text"`
 }
 
-// SendSlackNotification will post to an 'Incoming Webook' url setup in Slack Apps. It accepts
+// SendSlackNotification will post to an 'Incoming Webhook' url setup in Slack Apps. It accepts
 // some text and the slack channel is saved within Slack.
 func SendSlackNotification(msg string) error {
-
-    if os.Getenv("SLACK_ENABLED") == "" {
-        return nil
-    }
+    
+    if config.Conf.Notifications.Email.Enabled == false {
+		return nil
+    }    
 
 	webhookUrl := os.Getenv("SLACK_WEBHOOK_URL")
     slackBody, _ := json.Marshal(SlackRequestBody{Text: msg})

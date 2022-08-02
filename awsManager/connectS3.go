@@ -12,7 +12,7 @@ import (
 func ConnectToS3() *s3.Client{
 	cfg, err := config.LoadDefaultConfig(context.TODO())
 	if err != nil {
-	log.Fatalf("failed to load configuration, %v", err)
+	log.Fatalf("Failed to load configuration, %v", err)
 	}
 
 	return s3.NewFromConfig(cfg)

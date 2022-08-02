@@ -4,13 +4,15 @@ import (
 	"fmt"
 	"net/smtp"
 	"os"
+
+	"github.com/NiclasTimmeDev/pg-docker-backup/config"
 )
 
 // SendEmailNotification sends an email notification
 // to an admin. It will do nothin if emails are not enabled in .env.
 func SendEmailNotification(body string) {
 
-	if os.Getenv("EMAILS_ENABLED") == "" {
+	if config.Conf.Notifications.Email.Enabled == false {
 		return
 	}
 	
